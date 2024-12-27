@@ -66,8 +66,7 @@
       scene.add(light);
 
       // Camera Position
-      camera.position.z = 15;
-      camera.position.y = 0;
+      camera.position.z = 20;
 
       // Camera Controls: Keyboard Navigation
       const keys = {
@@ -78,15 +77,19 @@
       };
 
       window.addEventListener("keydown", (e) => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+        if (keys.hasOwnProperty(e.key)) {
+          keys[e.key] = true;
+        }
       });
 
       window.addEventListener("keyup", (e) => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+        if (keys.hasOwnProperty(e.key)) {
+          keys[e.key] = false;
+        }
       });
 
       function moveCamera() {
-        const speed = 0.2;
+        const speed = 0.5; // Movement speed
         if (keys.ArrowUp) camera.position.y += speed;
         if (keys.ArrowDown) camera.position.y -= speed;
         if (keys.ArrowLeft) camera.position.x -= speed;
@@ -103,7 +106,7 @@
       // Animation Loop
       function animate() {
         requestAnimationFrame(animate);
-        moveCamera();
+        moveCamera(); // Continuously check and update camera position
         renderer.render(scene, camera);
       }
 
