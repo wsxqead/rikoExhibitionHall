@@ -170,7 +170,7 @@
       // Generate Image Paths for 001 to 111
       const imagePaths = [];
       const baseURL = "https://wsxqead.github.io/rikoExhibitionHall/src/test/";
-      const extension = ".png"; // Change if images have a different extension
+      const extension = ".png";
       const totalImages = 111;
 
       for (let i = 1; i <= totalImages; i++) {
@@ -184,22 +184,17 @@
 
       imagePaths.forEach((path, index) => {
         const texture = textureLoader.load(path);
-        const geometry = new THREE.PlaneGeometry(2, 1.5); // Smaller size
+        const geometry = new THREE.PlaneGeometry(3, 2); // Adjusted image size
         const material = new THREE.MeshStandardMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
 
         // Store the image number in userData
         plane.userData = { number: index + 1 };
 
-        // Arrange images in a 3D spiral with more spacing
-        const angle = index * 0.3; // Increased spacing for clarity
-        const radius = 30 + index * 0.5; // Larger radius for better separation
-        plane.position.set(
-          radius * Math.cos(angle),
-          index * 1 - 50, // Spread images further apart vertically
-          radius * Math.sin(angle)
-        );
-        plane.lookAt(0, index * 1 - 50, 0);
+        // Arrange images in a grid-like formation
+        const row = Math.floor(index / 10); // 10 images per row
+        const col = index % 10; // Column within the row
+        plane.position.set(col * 4 - 18, -row * 4 + 20, 0); // Adjust positions
         mediaGroup.add(plane);
       });
 
@@ -211,26 +206,23 @@
 
       // Event listener for mouse click
       window.addEventListener("click", (event) => {
-        // Convert mouse position to normalized device coordinates
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
-        // Update raycaster
         raycaster.setFromCamera(mouse, camera);
 
-        // Check for intersections with images
         const intersects = raycaster.intersectObjects(mediaGroup.children, true);
 
         if (intersects.length > 0) {
           const target = intersects[0].object;
-          console.log("Clicked image number:", target.userData.number); // 번호 출력
+          console.log("Clicked image number:", target.userData.number);
           focusOnImage(target);
         }
       });
 
-      // Function to move camera to focus on an image
+      // Function to focus on an image
       function focusOnImage(target) {
-        const duration = 1000;
+        const duration = 1000; // Animation duration in milliseconds
         const start = {
           x: camera.position.x,
           y: camera.position.y,
@@ -239,7 +231,7 @@
         const end = {
           x: target.position.x,
           y: target.position.y,
-          z: target.position.z + 5,
+          z: target.position.z + 8, // Position just in front of the image
         };
 
         let startTime;
@@ -262,7 +254,7 @@
       }
 
       // Camera Initial Position
-      camera.position.set(0, 0, 100);
+      camera.position.set(0, 10, 40);
 
       // Animation Loop
       function animate() {
