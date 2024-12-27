@@ -182,9 +182,9 @@
       const textureLoader = new THREE.TextureLoader();
       const mediaGroup = new THREE.Group();
 
-      const radius = 20; // Radius of the cylinder
-      const imagesPerLevel = 20; // Number of images per level
-      const levelHeight = 5; // Height difference between levels
+      const radius = 10; // Radius of the cylinder
+      const imagesPerLevel = 15; // Number of images per level
+      const levelHeight = 4; // Height difference between levels
 
       imagePaths.forEach((path, index) => {
         const texture = textureLoader.load(path);
@@ -220,7 +220,10 @@
 
         raycaster.setFromCamera(mouse, camera);
 
-        const intersects = raycaster.intersectObjects(mediaGroup.children, true);
+        const intersects = raycaster.intersectObjects(
+          mediaGroup.children,
+          true
+        );
 
         if (intersects.length > 0) {
           const target = intersects[0].object;
@@ -234,7 +237,11 @@
         // Reset other images
         mediaGroup.children.forEach((child) => {
           child.scale.set(1, 1, 1);
-          child.position.set(child.userData.originalPosition.x, child.userData.originalPosition.y, child.userData.originalPosition.z);
+          child.position.set(
+            child.userData.originalPosition.x,
+            child.userData.originalPosition.y,
+            child.userData.originalPosition.z
+          );
         });
 
         // Save original position of the target image
