@@ -184,22 +184,22 @@
 
       imagePaths.forEach((path, index) => {
         const texture = textureLoader.load(path);
-        const geometry = new THREE.PlaneGeometry(4, 3);
+        const geometry = new THREE.PlaneGeometry(2, 1.5); // Smaller size
         const material = new THREE.MeshStandardMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
 
         // Store the image number in userData
-        plane.userData = { number: index + 1 }; // 이미지 번호 저장
+        plane.userData = { number: index + 1 };
 
-        // Arrange images in a 3D spiral
-        const angle = index * 0.1;
-        const radius = 15 + index * 0.05;
+        // Arrange images in a 3D spiral with more spacing
+        const angle = index * 0.3; // Increased spacing for clarity
+        const radius = 30 + index * 0.5; // Larger radius for better separation
         plane.position.set(
           radius * Math.cos(angle),
-          index * 0.2 - 20,
+          index * 1 - 50, // Spread images further apart vertically
           radius * Math.sin(angle)
         );
-        plane.lookAt(0, index * 0.2 - 20, 0);
+        plane.lookAt(0, index * 1 - 50, 0);
         mediaGroup.add(plane);
       });
 
@@ -219,21 +219,18 @@
         raycaster.setFromCamera(mouse, camera);
 
         // Check for intersections with images
-        const intersects = raycaster.intersectObjects(
-          mediaGroup.children,
-          true
-        );
+        const intersects = raycaster.intersectObjects(mediaGroup.children, true);
 
         if (intersects.length > 0) {
-          const target = intersects[0].object; // The clicked image
+          const target = intersects[0].object;
           console.log("Clicked image number:", target.userData.number); // 번호 출력
-          focusOnImage(target); // Move camera to focus on the image
+          focusOnImage(target);
         }
       });
 
       // Function to move camera to focus on an image
       function focusOnImage(target) {
-        const duration = 1000; // Animation duration in milliseconds
+        const duration = 1000;
         const start = {
           x: camera.position.x,
           y: camera.position.y,
@@ -242,7 +239,7 @@
         const end = {
           x: target.position.x,
           y: target.position.y,
-          z: target.position.z + 5, // Offset to prevent overlap
+          z: target.position.z + 5,
         };
 
         let startTime;
@@ -250,7 +247,7 @@
         function animateCamera(timestamp) {
           if (!startTime) startTime = timestamp;
           const elapsed = timestamp - startTime;
-          const t = Math.min(elapsed / duration, 1); // Interpolation factor (0 to 1)
+          const t = Math.min(elapsed / duration, 1);
 
           camera.position.x = start.x + (end.x - start.x) * t;
           camera.position.y = start.y + (end.y - start.y) * t;
@@ -265,12 +262,12 @@
       }
 
       // Camera Initial Position
-      camera.position.set(0, 0, 50);
+      camera.position.set(0, 0, 100);
 
       // Animation Loop
       function animate() {
         requestAnimationFrame(animate);
-        controls.update(); // Update orbit controls
+        controls.update();
         renderer.render(scene, camera);
       }
 
