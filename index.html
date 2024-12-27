@@ -161,7 +161,7 @@
 
       // Generate Image Paths for 001 to 111
       const imagePaths = [];
-      const baseURL = "https://wsxqead.github.io/rikoExhibitionHall/src/test/";
+      const baseURL = "https://wsxqead.github.io/rikoExhibitionHall/src/test";
       const extension = ".png"; // Change if images have a different extension
       const totalImages = 111;
 
@@ -203,26 +203,30 @@
         ArrowDown: false,
         ArrowLeft: false,
         ArrowRight: false,
+        w: false,
+        s: false,
       };
 
       window.addEventListener("keydown", (e) => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+        keys[e.key.toLowerCase()] = true;
       });
 
       window.addEventListener("keyup", (e) => {
-        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+        keys[e.key.toLowerCase()] = false;
       });
 
       function moveCamera() {
         const speed = 0.5; // Movement speed
-        if (keys.ArrowUp) camera.position.y += speed;
-        if (keys.ArrowDown) camera.position.y -= speed;
-        if (keys.ArrowLeft) camera.position.x -= speed;
-        if (keys.ArrowRight) camera.position.x += speed;
+        const zoomSpeed = 0.5; // Forward/Backward speed
+        if (keys.arrowup) camera.position.y += speed;
+        if (keys.arrowdown) camera.position.y -= speed;
+        if (keys.arrowleft) camera.position.x -= speed;
+        if (keys.arrowright) camera.position.x += speed;
+        if (keys.w) camera.position.z -= zoomSpeed; // Move forward
+        if (keys.s) camera.position.z += zoomSpeed; // Move backward
 
-        // Add depth-based forward/backward movement
-        if (keys["w"] || keys["W"]) camera.position.z -= speed;
-        if (keys["s"] || keys["S"]) camera.position.z += speed;
+        // Ensure the camera does not get too close or too far
+        camera.position.z = Math.max(5, Math.min(camera.position.z, 100));
       }
 
       // Resize Handling
@@ -230,6 +234,11 @@
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      window.addEventListener("wheel", (e) => {
+        camera.position.z += e.deltaY * 0.01; // 휠 스크롤 방향에 따라 이동
+        camera.position.z = Math.max(5, Math.min(camera.position.z, 100)); // 범위 제한
       });
 
       // Animation Loop
