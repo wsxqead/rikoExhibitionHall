@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Image Gallery</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // Scene, Camera, Renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Gallery Images
+      const textureLoader = new THREE.TextureLoader();
+      const imagePaths = [
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover1.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover2.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover3.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover4.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover5.jpg",
+      ];
+
+      const imageGroup = new THREE.Group();
+
+      imagePaths.forEach((path, index) => {
+        const texture = textureLoader.load(path);
+        const geometry = new THREE.PlaneGeometry(4, 3);
+        const material = new THREE.MeshBasicMaterial({ map: texture });
+        const plane = new THREE.Mesh(geometry, material);
+
+        plane.position.set(index * 5 - 10, 0, 0); // Spread images horizontally
+        imageGroup.add(plane);
+      });
+
+      scene.add(imageGroup);
+
+      // Lighting
+      const light = new THREE.AmbientLight(0xffffff, 1);
+      scene.add(light);
+
+      // Camera Position
+      camera.position.z = 10;
+
+      // Controls: Simple Animation (Rotate images)
+      let angle = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+
+        angle += 0.01;
+        imageGroup.rotation.y = angle; // Rotate the entire group
+        renderer.render(scene, camera);
+      }
+
+      // Resize Handling
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      animate();
+    </script>
+  </body>
+</html>
