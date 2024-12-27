@@ -183,7 +183,13 @@
       const mediaGroup = new THREE.Group();
 
       imagePaths.forEach((path, index) => {
-        const texture = textureLoader.load(path);
+        const texture = textureLoader.load(
+          path,
+          () => console.log(`Successfully loaded: ${path}`), // 로딩 성공
+          undefined,
+          (err) => console.error(`Failed to load: ${path}`, err) // 로딩 실패
+        );
+
         const geometry = new THREE.PlaneGeometry(4, 3);
         const material = new THREE.MeshStandardMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
@@ -205,48 +211,9 @@
       // Camera Initial Position
       camera.position.set(0, 0, 50);
 
-      // Camera Controls: WASD Navigation
-      const keys = {
-        w: false,
-        a: false,
-        s: false,
-        d: false,
-      };
-
-      window.addEventListener("keydown", (e) => {
-        if (keys.hasOwnProperty(e.key.toLowerCase())) {
-          keys[e.key.toLowerCase()] = true;
-        }
-      });
-
-      window.addEventListener("keyup", (e) => {
-        if (keys.hasOwnProperty(e.key.toLowerCase())) {
-          keys[e.key.toLowerCase()] = false;
-        }
-      });
-
-      function moveCamera() {
-        const speed = 0.5; // Movement speed
-        if (keys.w) camera.position.z -= speed; // Move forward
-        if (keys.s) camera.position.z += speed; // Move backward
-        if (keys.a) camera.position.x -= speed; // Move left
-        if (keys.d) camera.position.x += speed; // Move right
-
-        // Add limits to prevent getting too close or too far
-        camera.position.z = Math.max(5, Math.min(camera.position.z, 100));
-      }
-
-      // Resize Handling
-      window.addEventListener("resize", () => {
-        camera.aspect = window.innerWidth / window.innerHeight;
-        camera.updateProjectionMatrix();
-        renderer.setSize(window.innerWidth, window.innerHeight);
-      });
-
       // Animation Loop
       function animate() {
         requestAnimationFrame(animate);
-        moveCamera();
         controls.update(); // Update orbit controls
         renderer.render(scene, camera);
       }
