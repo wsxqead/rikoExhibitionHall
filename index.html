@@ -1,3 +1,126 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>3D Image Gallery</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      canvas {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      // Scene, Camera, Renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Background Color
+      scene.background = new THREE.Color(0x1e1e1e);
+
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5); // Soft light
+      scene.add(ambientLight);
+      const pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.position.set(0, 5, 10); // Overhead light
+      scene.add(pointLight);
+
+      // Gallery Images
+      const textureLoader = new THREE.TextureLoader();
+      const imagePaths = [
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover1.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover2.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover3.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover4.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover5.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover6.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover7.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover8.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover9.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover10.jpg",
+      ];
+
+      const imageGroup = new THREE.Group();
+
+      imagePaths.forEach((path, index) => {
+        const texture = textureLoader.load(path);
+        const geometry = new THREE.PlaneGeometry(4, 3);
+        const material = new THREE.MeshStandardMaterial({ map: texture });
+        const plane = new THREE.Mesh(geometry, material);
+
+        // Arrange images in a 3D space (grid layout)
+        const row = Math.floor(index / 5);
+        const col = index % 5;
+        plane.position.set(col * 6 - 12, -row * 5, -index * 3); // Add depth
+        plane.rotation.y = (Math.random() - 0.5) * 0.1; // Slight random rotation
+        imageGroup.add(plane);
+      });
+
+      scene.add(imageGroup);
+
+      // Camera Initial Position: Focus on the first image
+      camera.position.set(-12, 0, 15);
+
+      // Camera Controls: Keyboard Navigation
+      const keys = {
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false,
+      };
+
+      window.addEventListener("keydown", (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+      });
+
+      window.addEventListener("keyup", (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+      });
+
+      function moveCamera() {
+        const speed = 0.5; // Movement speed
+        if (keys.ArrowUp) camera.position.y += speed;
+        if (keys.ArrowDown) camera.position.y -= speed;
+        if (keys.ArrowLeft) camera.position.x -= speed;
+        if (keys.ArrowRight) camera.position.x += speed;
+
+        // Add depth-based forward/backward movement (optional)
+        if (keys["w"] || keys["W"]) camera.position.z -= speed;
+        if (keys["s"] || keys["S"]) camera.position.z += speed;
+      }
+
+      // Resize Handling
+      window.addEventListener("resize", () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      // Animation Loop
+      function animate() {
+        requestAnimationFrame(animate);
+        moveCamera();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html> -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -25,50 +148,54 @@
         0.1,
         1000
       );
-      const renderer = new THREE.WebGLRenderer();
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
 
-      // Gallery Images
-      const textureLoader = new THREE.TextureLoader();
-      const imagePaths = [
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover1.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover2.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover3.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover4.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover5.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover6.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover7.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover8.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover9.jpg",
-        "https://wsxqead.github.io/rikoExhibitionHall/src/cover10.jpg",
-      ];
+      // Lighting
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+      scene.add(ambientLight);
+      const pointLight = new THREE.PointLight(0xffffff, 1);
+      pointLight.position.set(0, 10, 10);
+      scene.add(pointLight);
 
-      const imageGroup = new THREE.Group();
+      // Generate Image Paths for 001 to 111
+      const imagePaths = [];
+      const baseURL = "https://wsxqead.github.io/rikoExhibitionHall/src/test/";
+      const extension = ".jpg"; // Change if images have a different extension
+      const totalImages = 111;
+
+      for (let i = 1; i <= totalImages; i++) {
+        const paddedNumber = i.toString().padStart(3, "0"); // 001, 002, ... 111
+        imagePaths.push(`${baseURL}${paddedNumber}${extension}`);
+      }
+
+      // Add Images to the Scene
+      const textureLoader = new THREE.TextureLoader();
+      const mediaGroup = new THREE.Group();
 
       imagePaths.forEach((path, index) => {
         const texture = textureLoader.load(path);
         const geometry = new THREE.PlaneGeometry(4, 3);
-        const material = new THREE.MeshBasicMaterial({ map: texture });
+        const material = new THREE.MeshStandardMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
 
-        // Arrange images in a grid
-        const row = Math.floor(index / 5);
-        const col = index % 5;
-        plane.position.set(col * 6 - 12, -row * 5, 0); // Grid layout
-        imageGroup.add(plane);
+        // Arrange images in a 3D spiral
+        const angle = index * 0.1; // Spiral spacing
+        const radius = 15 + index * 0.05; // Spiral radius
+        plane.position.set(
+          radius * Math.cos(angle),
+          index * 0.2 - 20, // Gradual vertical spacing
+          radius * Math.sin(angle)
+        );
+        plane.lookAt(0, index * 0.2 - 20, 0); // Face towards the center
+        mediaGroup.add(plane);
       });
 
-      scene.add(imageGroup);
+      scene.add(mediaGroup);
 
-      // Lighting
-      const light = new THREE.AmbientLight(0xffffff, 1);
-      scene.add(light);
-
-      // Camera Initial Position: Focus on the first image
-      camera.position.x = -12; // Align with the first column
-      camera.position.y = 0; // Center on the first row
-      camera.position.z = 10; // Move closer to the image
+      // Camera Initial Position
+      camera.position.set(0, 0, 50);
 
       // Camera Controls: Keyboard Navigation
       const keys = {
@@ -79,15 +206,11 @@
       };
 
       window.addEventListener("keydown", (e) => {
-        if (keys.hasOwnProperty(e.key)) {
-          keys[e.key] = true;
-        }
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
       });
 
       window.addEventListener("keyup", (e) => {
-        if (keys.hasOwnProperty(e.key)) {
-          keys[e.key] = false;
-        }
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
       });
 
       function moveCamera() {
@@ -96,6 +219,10 @@
         if (keys.ArrowDown) camera.position.y -= speed;
         if (keys.ArrowLeft) camera.position.x -= speed;
         if (keys.ArrowRight) camera.position.x += speed;
+
+        // Add depth-based forward/backward movement
+        if (keys["w"] || keys["W"]) camera.position.z -= speed;
+        if (keys["s"] || keys["S"]) camera.position.z += speed;
       }
 
       // Resize Handling
@@ -108,7 +235,7 @@
       // Animation Loop
       function animate() {
         requestAnimationFrame(animate);
-        moveCamera(); // Continuously check and update camera position
+        moveCamera();
         renderer.render(scene, camera);
       }
 
