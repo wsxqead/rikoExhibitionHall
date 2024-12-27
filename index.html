@@ -138,7 +138,6 @@
     </style>
   </head>
   <body>
-    <!-- Three.js and OrbitControls -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script>
@@ -156,9 +155,9 @@
 
       // OrbitControls for rotation
       const controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true; // Smooth rotation
+      controls.enableDamping = true;
       controls.dampingFactor = 0.1;
-      controls.enableZoom = true; // Allow zooming
+      controls.enableZoom = true;
       controls.zoomSpeed = 0.5;
 
       // Lighting
@@ -175,7 +174,7 @@
       const totalImages = 111;
 
       for (let i = 1; i <= totalImages; i++) {
-        const paddedNumber = i.toString().padStart(3, "0"); // 001, 002, ... 111
+        const paddedNumber = i.toString().padStart(3, "0");
         imagePaths.push(`${baseURL}${paddedNumber}${extension}`);
       }
 
@@ -184,30 +183,79 @@
       const mediaGroup = new THREE.Group();
 
       imagePaths.forEach((path, index) => {
-        const texture = textureLoader.load(
-          path,
-          () => console.log(`Successfully loaded: ${path}`), // 로딩 성공
-          undefined,
-          (err) => console.error(`Failed to load: ${path}`, err) // 로딩 실패
-        );
-
+        const texture = textureLoader.load(path);
         const geometry = new THREE.PlaneGeometry(4, 3);
         const material = new THREE.MeshStandardMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
 
         // Arrange images in a 3D spiral
-        const angle = index * 0.1; // Spiral spacing
-        const radius = 15 + index * 0.05; // Spiral radius
+        const angle = index * 0.1;
+        const radius = 15 + index * 0.05;
         plane.position.set(
           radius * Math.cos(angle),
-          index * 0.2 - 20, // Gradual vertical spacing
+          index * 0.2 - 20,
           radius * Math.sin(angle)
         );
-        plane.lookAt(0, index * 0.2 - 20, 0); // Face towards the center
+        plane.lookAt(0, index * 0.2 - 20, 0);
         mediaGroup.add(plane);
       });
 
       scene.add(mediaGroup);
+
+      // Raycaster for mouse interaction
+      const raycaster = new THREE.Raycaster();
+      const mouse = new THREE.Vector2();
+
+      // Event listener for mouse click
+      window.addEventListener("click", (event) => {
+        // Convert mouse position to normalized device coordinates
+        mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+        // Update raycaster
+        raycaster.setFromCamera(mouse, camera);
+
+        // Check for intersections with images
+        const intersects = raycaster.intersectObjects(mediaGroup.children);
+
+        if (intersects.length > 0) {
+          const target = intersects[0].object; // The clicked image
+          focusOnImage(target); // Move camera to focus on the image
+        }
+      });
+
+      // Function to move camera to focus on an image
+      function focusOnImage(target) {
+        const duration = 1000; // Animation duration in milliseconds
+        const start = {
+          x: camera.position.x,
+          y: camera.position.y,
+          z: camera.position.z,
+        };
+        const end = {
+          x: target.position.x,
+          y: target.position.y,
+          z: target.position.z + 5, // Offset to prevent overlap
+        };
+
+        let startTime;
+
+        function animateCamera(timestamp) {
+          if (!startTime) startTime = timestamp;
+          const elapsed = timestamp - startTime;
+          const t = Math.min(elapsed / duration, 1); // Interpolation factor (0 to 1)
+
+          camera.position.x = start.x + (end.x - start.x) * t;
+          camera.position.y = start.y + (end.y - start.y) * t;
+          camera.position.z = start.z + (end.z - start.z) * t;
+
+          if (t < 1) {
+            requestAnimationFrame(animateCamera);
+          }
+        }
+
+        requestAnimationFrame(animateCamera);
+      }
 
       // Camera Initial Position
       camera.position.set(0, 0, 50);
