@@ -188,6 +188,9 @@
         const material = new THREE.MeshStandardMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
 
+        // Store the image number in userData
+        plane.userData = { number: index + 1 }; // 이미지 번호 저장
+
         // Arrange images in a 3D spiral
         const angle = index * 0.1;
         const radius = 15 + index * 0.05;
@@ -222,8 +225,8 @@
         );
 
         if (intersects.length > 0) {
-          // Ensure the closest image is selected
-          const target = intersects[0].object;
+          const target = intersects[0].object; // The clicked image
+          console.log("Clicked image number:", target.userData.number); // 번호 출력
           focusOnImage(target); // Move camera to focus on the image
         }
       });
