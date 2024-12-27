@@ -37,6 +37,11 @@
         "https://wsxqead.github.io/rikoExhibitionHall/src/cover3.jpg",
         "https://wsxqead.github.io/rikoExhibitionHall/src/cover4.jpg",
         "https://wsxqead.github.io/rikoExhibitionHall/src/cover5.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover6.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover7.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover8.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover9.jpg",
+        "https://wsxqead.github.io/rikoExhibitionHall/src/cover10.jpg",
       ];
 
       const imageGroup = new THREE.Group();
@@ -47,7 +52,10 @@
         const material = new THREE.MeshBasicMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
 
-        plane.position.set(index * 5 - 10, 0, 0); // Spread images horizontally
+        // Arrange images in a grid
+        const row = Math.floor(index / 5);
+        const col = index % 5;
+        plane.position.set(col * 6 - 12, -row * 5, 0); // Grid layout
         imageGroup.add(plane);
       });
 
@@ -58,16 +66,31 @@
       scene.add(light);
 
       // Camera Position
-      camera.position.z = 10;
+      camera.position.z = 15;
+      camera.position.y = 0;
 
-      // Controls: Simple Animation (Rotate images)
-      let angle = 0;
-      function animate() {
-        requestAnimationFrame(animate);
+      // Camera Controls: Keyboard Navigation
+      const keys = {
+        ArrowUp: false,
+        ArrowDown: false,
+        ArrowLeft: false,
+        ArrowRight: false,
+      };
 
-        angle += 0.01;
-        imageGroup.rotation.y = angle; // Rotate the entire group
-        renderer.render(scene, camera);
+      window.addEventListener("keydown", (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = true;
+      });
+
+      window.addEventListener("keyup", (e) => {
+        if (keys.hasOwnProperty(e.key)) keys[e.key] = false;
+      });
+
+      function moveCamera() {
+        const speed = 0.2;
+        if (keys.ArrowUp) camera.position.y += speed;
+        if (keys.ArrowDown) camera.position.y -= speed;
+        if (keys.ArrowLeft) camera.position.x -= speed;
+        if (keys.ArrowRight) camera.position.x += speed;
       }
 
       // Resize Handling
@@ -76,6 +99,13 @@
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
+
+      // Animation Loop
+      function animate() {
+        requestAnimationFrame(animate);
+        moveCamera();
+        renderer.render(scene, camera);
+      }
 
       animate();
     </script>
