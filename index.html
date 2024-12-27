@@ -216,10 +216,14 @@
         raycaster.setFromCamera(mouse, camera);
 
         // Check for intersections with images
-        const intersects = raycaster.intersectObjects(mediaGroup.children);
+        const intersects = raycaster.intersectObjects(
+          mediaGroup.children,
+          true
+        );
 
         if (intersects.length > 0) {
-          const target = intersects[0].object; // The clicked image
+          // Ensure the closest image is selected
+          const target = intersects[0].object;
           focusOnImage(target); // Move camera to focus on the image
         }
       });
