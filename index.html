@@ -65,8 +65,10 @@
       const light = new THREE.AmbientLight(0xffffff, 1);
       scene.add(light);
 
-      // Camera Position
-      camera.position.z = 20;
+      // Camera Initial Position: Focus on the first image
+      camera.position.x = -12; // Align with the first column
+      camera.position.y = 0; // Center on the first row
+      camera.position.z = 10; // Move closer to the image
 
       // Camera Controls: Keyboard Navigation
       const keys = {
