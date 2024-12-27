@@ -182,19 +182,28 @@
       const textureLoader = new THREE.TextureLoader();
       const mediaGroup = new THREE.Group();
 
+      const radius = 20; // Radius of the cylinder
+      const imagesPerLevel = 20; // Number of images per level
+      const levelHeight = 5; // Height difference between levels
+
       imagePaths.forEach((path, index) => {
         const texture = textureLoader.load(path);
-        const geometry = new THREE.PlaneGeometry(3, 2); // Adjusted image size
+        const geometry = new THREE.PlaneGeometry(4, 3); // Image size
         const material = new THREE.MeshStandardMaterial({ map: texture });
         const plane = new THREE.Mesh(geometry, material);
 
         // Store the image number in userData
         plane.userData = { number: index + 1 };
 
-        // Arrange images in a grid-like formation
-        const row = Math.floor(index / 10); // 10 images per row
-        const col = index % 10; // Column within the row
-        plane.position.set(col * 4 - 18, -row * 4 + 20, 0); // Adjust positions
+        // Arrange images in a cylindrical shape
+        const level = Math.floor(index / imagesPerLevel); // Which level the image is on
+        const angle = ((index % imagesPerLevel) / imagesPerLevel) * Math.PI * 2; // Angle around the circle
+        plane.position.set(
+          radius * Math.cos(angle),
+          level * levelHeight - 30, // Adjust height per level
+          radius * Math.sin(angle)
+        );
+        plane.lookAt(0, level * levelHeight - 30, 0); // Ensure image faces the center
         mediaGroup.add(plane);
       });
 
@@ -211,7 +220,10 @@
 
         raycaster.setFromCamera(mouse, camera);
 
-        const intersects = raycaster.intersectObjects(mediaGroup.children, true);
+        const intersects = raycaster.intersectObjects(
+          mediaGroup.children,
+          true
+        );
 
         if (intersects.length > 0) {
           const target = intersects[0].object;
@@ -231,7 +243,7 @@
         const end = {
           x: target.position.x,
           y: target.position.y,
-          z: target.position.z + 8, // Position just in front of the image
+          z: target.position.z + 10, // Position just in front of the image
         };
 
         let startTime;
@@ -254,7 +266,7 @@
       }
 
       // Camera Initial Position
-      camera.position.set(0, 10, 40);
+      camera.position.set(0, 0, 50);
 
       // Animation Loop
       function animate() {
