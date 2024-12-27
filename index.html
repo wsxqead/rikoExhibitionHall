@@ -139,6 +139,7 @@
   </head>
   <body>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/examples/js/controls/OrbitControls.js"></script>
     <script>
       // Scene, Camera, Renderer
       const scene = new THREE.Scene();
@@ -151,6 +152,13 @@
       const renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       document.body.appendChild(renderer.domElement);
+
+      // OrbitControls for rotation
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true; // Smooth rotation
+      controls.dampingFactor = 0.1;
+      controls.enableZoom = true; // Allow zooming
+      controls.zoomSpeed = 0.5;
 
       // Lighting
       const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
@@ -235,15 +243,11 @@
         renderer.setSize(window.innerWidth, window.innerHeight);
       });
 
-      window.addEventListener("wheel", (e) => {
-        camera.position.z += e.deltaY * 0.01; // 휠 스크롤 방향에 따라 이동
-        camera.position.z = Math.max(5, Math.min(camera.position.z, 100)); // 범위 제한
-      });
-
       // Animation Loop
       function animate() {
         requestAnimationFrame(animate);
         moveCamera();
+        controls.update(); // Update orbit controls
         renderer.render(scene, camera);
       }
 
